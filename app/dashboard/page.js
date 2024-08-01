@@ -1,9 +1,9 @@
 "use client"
 import React from 'react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-const page = () => {
+const Page = () => {
     const [todo, setTodo] = useState("")
     const [tar, settar] = useState([])
     const [setshowbtn, setSetshowbtn] = useState(false);
@@ -142,4 +142,4 @@ const page = () => {
     )
 }
 
-export default page
+export default Page

@@ -1,8 +1,8 @@
 "use client"
 import React from 'react'
-import { useUser } from '@auth0/nextjs-auth0/client'
+import { useUser } from '@auth0/nextjs-auth0/client';
 
-const page = () => {
+const Page = () => {
   const { user, error, isLoading } = useUser();
 
   return (
@@ -23,4 +23,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page
