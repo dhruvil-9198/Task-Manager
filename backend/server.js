@@ -7,17 +7,24 @@ const app = express()
 
 dotenv.config()
 
-const port = 10000
-app.use(cors())
+const port = 3001
 app.use(bodyparser.json())
+
+const corsOptions = {
+    origin: '*',
+    methods: ['GET', 'POST', 'DELETE']
+};
+app.use(cors(corsOptions))
 
 const url = process.env.MONGO_URI;
 const client = new MongoClient(url);
 
 const dbName = process.env.DB_NAME;
-client.connect();
 
-app.get('/', async (req, res) => {
+async function main(){
+    await client.connect();
+    
+    app.get('/', async (req, res) => {
     const name = req.query.u_name;
     const db = client.db(dbName);
     const collection = db.collection('Tasks');
@@ -42,15 +49,18 @@ app.delete('/', async (req, res) => {
 })
 
 // app.post('/', async (req, res) => {
-//     const task = req.body;
-//     const db = client.db(dbName);
-//     const collection = db.collection('Tasks');
-//     const updateResult = await collection.updateOne({_id:task.id}, { $set: { isCompleted: !task.isCompleted }});
-//     res.send({success: true, result: updateResult})
-// })
+    //     const task = req.body;
+    //     const db = client.db(dbName);
+    //     const collection = db.collection('Tasks');
+    //     const updateResult = await collection.updateOne({_id:task.id}, { $set: { isCompleted: !task.isCompleted }});
+    //     res.send({success: true, result: updateResult})
+    // })
+    
+    
+    
+    app.listen(port, () => {
+        console.log(`Example app listening on port http://localhost:${port}`)
+    })
+}
 
-
-
-app.listen(port, () => {
-    console.log(`Example app listening on port http://localhost:${port}`)
-})
+main();
