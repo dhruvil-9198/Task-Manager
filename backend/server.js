@@ -40,9 +40,7 @@ const Task = mongoose.model('Task', taskSchema);
 app.get('/', async (req, res) => {
     try {
         const name = req.query.u_name;
-        console.log(name);
         const tasks = await Task.find({ u_name: name });
-        console.log(tasks);
         res.json(tasks);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -62,7 +60,7 @@ app.post('/', async (req, res) => {
 app.delete('/', async (req, res) => {
     try {
         const taskId = req.body.id;
-        const deletedTask = await Task.findByIdAndDelete(taskId);
+        const deletedTask = await Task.deleteOne({id: taskId});
         res.send({ success: true, result: deletedTask });
     } catch (err) {
         res.status(500).json({ error: err.message });
