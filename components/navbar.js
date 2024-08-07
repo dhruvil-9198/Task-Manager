@@ -1,12 +1,15 @@
 "use client"
 import React from 'react'
 import { useUser } from '@auth0/nextjs-auth0/client'
+// import { useSession, signIn, signOut } from "next-auth/react"
 import { Button } from 'flowbite-react';
 import { Dropdown } from 'flowbite-react';
 import Link from 'next/link';
 
 const Navbar = () => {
+  // const { data: session } = useSession()
   const { user, error, isLoading } = useUser();
+
 
   return (
     <>
@@ -23,17 +26,16 @@ const Navbar = () => {
         </div>}
         {user && <div className='flex gap-3'>
         <Dropdown label="Menu" className='bg-white py-1 px-4 font-medium hover:font-medium' dismissOnClick={false}>
-          <Dropdown.Item><Link href={"http://localhost:3000"}>
+          <Dropdown.Item><Link href={"/"}>
             Home
           </Link></Dropdown.Item>
-          <Dropdown.Item><Link href={"http://localhost:3000/dashboard"}>
+          <Dropdown.Item><Link href={"/dashboard"}>
             Dashboard
           </Link></Dropdown.Item>
-          <Dropdown.Item><Link href={`http://localhost:3000/${user.name}`}>
+          <Dropdown.Item><Link href={`/${user.name}`}>
             Profile
           </Link></Dropdown.Item>
-          <Dropdown.Item >
-            <Link href={"/api/auth/logout"}>Sign out</Link>
+          <Dropdown.Item ><Link href="/api/auth/logout">Sign out</Link>
           </Dropdown.Item>
         </Dropdown>
 

@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navbar";
+// import SessionWrapper from "@/components/SessionWrapper";
 import { UserProvider } from '@auth0/nextjs-auth0/client';
 
 

@@ -2,44 +2,65 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+// import { useSession, signIn, signOut } from "next-auth/react"
+import { useUser } from '@auth0/nextjs-auth0/client'
 
 const Page = () => {
     const [todo, setTodo] = useState("")
     const [tar, settar] = useState([])
     const [setshowbtn, setSetshowbtn] = useState(false);
+    // const { data: session } = useSession()
+    const { user, error, isLoading } = useUser();
+
+    let u_name;
+    // const saveLS = (newtar) => {
+    //   localStorage.setItem("user_det", JSON.stringify(newtar))
+    // }
+    if(user){
+      u_name = user.email;
+      // saveLS(user.email);
+    }
+      
+    
   
-//     const getPasswords = async () => {
-//       let req = await fetch("http://localhost:3000/")
-//       let tasks = await req.json()
-//       settar(tasks);
-//   }
+    const getPasswords = async () => {
+      console.log("ENTERED")
+      // let nt = localStorage.getItem("user_det");
+      // if(nt){
+      //     let ntar = JSON.parse(localStorage.getItem("user_det"))
+      //     u_name = ntar;
+      // }
+      let url = 'https://task-manager-l1rs.onrender.com'
+      const params = new URLSearchParams({
+        u_name : u_name
+      });
+      console.log("MID")
+      let req = await fetch(`${url}?${params.toString()}`)
+      let tasks = await req.json()
+      settar(tasks);
+      console.log("FINISHED")
+  }
   
   
   useEffect(() => {
-    //   getPasswords()
-    let nt = localStorage.getItem("tar");
-    if(nt){
-        let ntar = JSON.parse(localStorage.getItem("tar")) 
-      settar(ntar)
+    if(user){
+      getPasswords();
     }
-  }, [])
+    
+  }, [user])
   
   
   
   
-    const saveLS = (newtar) => {
-      localStorage.setItem("tar", JSON.stringify(newtar))
-    }
-  
+
     const HandleSaveclick = async () => {
-      let newtar = [...tar, { id: uuidv4(), todo, isCompleted: false }];
+      let newtar = [...tar, { id: uuidv4(), u_name ,todo, isCompleted: false }];
       settar(newtar)
-      console.log(tar)
-      saveLS(newtar);
+      // saveLS(newtar);
       
       //deletes task if it already exists
       
-    //   await fetch("http://localhost:3000/", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: uuidv4(), todo, isCompleted: false }) })
+      await fetch("https://task-manager-l1rs.onrender.com/", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: uuidv4(), u_name, todo, isCompleted: false }) })
       setTodo("")
     //   alert("Todo changed")
     }
@@ -49,33 +70,33 @@ const Page = () => {
       setTodo(t[0].todo);
   
       let newtar = tar.filter(item => {
-        return item.id !== id
+        return (item.id !== id && item.u_name === u_name)
       })
   
-    //   await fetch("http://localhost:3000/", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: id }) })
+      await fetch("https://task-manager-l1rs.onrender.com/", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: id }) })
   
   
       settar(newtar)
-      saveLS(newtar);
+      // saveLS(newtar);
     }
   
     const HandleDelclick = async (e) => {
       if (window.confirm('Are you sure you want to delete this item?')) {
         let newtar = tar.filter(item => {
-          return item.id !== e.target.name
+          return (item.id !== e.target.name && item.u_name === u_name)
   
         })
         
         settar(newtar)
-        saveLS(newtar);
-        // await fetch("http://localhost:3000/", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: e.target.name }) })
+        // saveLS(newtar);
+        await fetch("https://task-manager-l1rs.onrender.com/", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: e.target.name }) })
       }
     }
   
-    const handleClearAll = () => {
-      localStorage.clear();
-      settar('');
-    };
+    // const handleClearAll = () => {
+    //   localStorage.clear();
+    //   settar('');
+    // };
   
     const Handlechange = (e) => {
       setTodo(e.target.value)
@@ -88,24 +109,24 @@ const Page = () => {
     const HandleStrike = async (it) => {
       let id = it.id;
       let index = tar.findIndex(item => {
-        return item.id === id;
+        return (item.id === id && item.u_name === it.u_name);
       })
-  
+      
       let newtar = [...tar]
       newtar[index].isCompleted = !newtar[index].isCompleted;
       settar(newtar);
+      
+      await fetch("https://task-manager-l1rs.onrender.com/", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: id }) })
+      await fetch("https://task-manager-l1rs.onrender.com/", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(it) })
   
   
-    //   await fetch("http://localhost:3000/", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(it) })
   
-    //   await fetch("http://localhost:3000/", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: id }) })
-  
-      saveLS(newtar);
+      // saveLS(newtar);
     }
   
     return (
       <>
-        <div className="sup md:container  flex justify-center items-center my-5">
+        {user && <div className="sup md:container  flex justify-center items-center my-5">
           <div className="container text-white bg-slate-900 rounded-xl w-2/3 flex flex-col">
             <div className='my-5 font-bold text-2xl text-center'>Manage your Tasks at one place</div>
             <div className='addtodo mb-5'>
@@ -137,7 +158,7 @@ const Page = () => {
             </div>
   
           </div>
-        </div>
+        </div>}
       </>
     )
 }

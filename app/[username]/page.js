@@ -1,9 +1,12 @@
 "use client"
 import React from 'react'
-import { useUser } from '@auth0/nextjs-auth0/client';
+import { useUser } from '@auth0/nextjs-auth0/client'
+// import { useSession, signIn, signOut } from "next-auth/react"
 
 const Page = () => {
+  // const { data: session } = useSession()
   const { user, error, isLoading } = useUser();
+
 
   return (
     <>
